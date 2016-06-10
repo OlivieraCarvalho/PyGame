@@ -26,6 +26,7 @@ carImg = pygame.image.load('Player.png')
 car2Img = pygame.image.load('Enemy.png')
 back = pygame.image.load('back.jpg').convert()
 gameDisplay.blit(back, (0, 0))
+
 def things_dodged(count):
     font = pygame.font.SysFont(None,40)
     text = font.render("Score : "+str(count),True,red)
@@ -33,11 +34,14 @@ def things_dodged(count):
 
 def things(thingx,thingy):
     gameDisplay.blit(car2Img,(thingx,thingy))
+    
 def carDisplay(x,y):
     gameDisplay.blit(carImg,(x,y))
+
 def text_objects(text,font):
     textSurface = font.render(text, True, red)
     return textSurface, textSurface.get_rect()
+
 def message_display(text):
     largeText = pygame.font.Font('freesansbold.ttf',90)
     TextSurf, TextRect = text_objects(text, largeText)
@@ -46,6 +50,7 @@ def message_display(text):
     pygame.display.update()
     time.sleep(1.5)
     game_loop()
+
 def crash():
     message_display('You Crashed!')
 
@@ -97,7 +102,6 @@ def game_loop():
                 if event.key == pygame.K_LEFT or pygame.K_RIGHT:
                     x_change=0
         x = x + x_change
-        ##gameDisplay.fill(grey)
         gameDisplay.blit(back, (0, 0))
 
         things(thing_startx, thing_starty)
@@ -117,11 +121,8 @@ def game_loop():
         if y < thing_starty+thing_height: #y crossover
             if thing_startx < x + car_width and thing_startx + thing_width > x:
                 crash()
-            #if x > thing_startx and x < thing_startx + thing_width or x+car_width > thing_startx and x + car_width < thing_startx+thing_width:
-                #x crossover
         pygame.display.update()
         clock.tick(30)
-#game_intro()
 game_loop()
 pygame.quit()
 quit()
