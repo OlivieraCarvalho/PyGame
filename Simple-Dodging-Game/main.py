@@ -10,16 +10,18 @@ black = (0,0,0)
 white = (255,255,255)
 red = (250,0,0)
 grey = (166,175,179)
-green = (0, 250, 0)
+blue = (29,164,209)
+green = (12, 105, 19)
 brightred = (255,0,0)
 brightgreen = (0,255,0)
 car_width = 150
 thing_height = 300
 thing_width = 150
+gameOver = False
 
 pygame.init()
 gameDisplay = pygame.display.set_mode((display_width,display_height))
-pygame.display.set_caption('Fast N Furious')
+pygame.display.set_caption('Simple Dodging Game')
 clock = pygame.time.Clock()
 
 carImg = pygame.image.load('Player.png')
@@ -28,13 +30,11 @@ back = pygame.image.load('back.jpg').convert()
 gameDisplay.blit(back, (0, 0))
 
 def things_dodged(count):
-    font = pygame.font.SysFont(None,40)
-    text = font.render("Score : "+str(count),True,red)
-    gameDisplay.blit(text,(10,10))
+    message("Score : "+str(count),red,40,10,10)
 
 def things(thingx,thingy):
     gameDisplay.blit(car2Img,(thingx,thingy))
-    
+
 def carDisplay(x,y):
     gameDisplay.blit(carImg,(x,y))
 
@@ -42,40 +42,10 @@ def text_objects(text,font):
     textSurface = font.render(text, True, red)
     return textSurface, textSurface.get_rect()
 
-def message_display(text):
-    largeText = pygame.font.Font('freesansbold.ttf',90)
-    TextSurf, TextRect = text_objects(text, largeText)
-    TextRect.center = ((display_width/2),(display_height/2))
-    gameDisplay.blit(TextSurf, TextRect)
-    pygame.display.update()
-    time.sleep(1.5)
-    game_loop()
-
-def crash():
-    message_display('You Crashed!')
-
-def game_intro():
-    intro = True
-    while intro:
-        for event in pygame.event.get():
-            print(event)
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-        gameDisplay.blit(back, (0, 0))
-        largeText = pygame.font.Font('freesansbold.ttf',90)
-        TextSurf, TextRect = text_objects("FAST N FURIOUS", largeText)
-        TextRect.center = ((display_width/2),(display_height/2))
-        gameDisplay.blit(TextSurf, TextRect)
-        pygame.draw.rect(gameDisplay,red,(675,400,100,60))
-        mouse = pygame.mouse.get_pos()
-        if 225+100 > mouse[0] > 225 and 400+60 > mouse[1] > 400:
-            pygame.draw.rect(gameDisplay,brightgreen,(225,400,100,60))
-        else:
-            pygame.draw.rect(gameDisplay,green,(225,400,100,60))
-
-        pygame.display.update()
-        clock.tick(15)
+def message(msg,color,size,x,y):
+    font = pygame.font.Font(None,size)
+    text = font.render(msg,True,color)
+    gameDisplay.blit(text,(x,y))
 
 def game_loop():
     x= (display_width*0.45)
@@ -110,6 +80,7 @@ def game_loop():
         things_dodged(dodged)
         if x>display_width - car_width or x<=0:
                 crash()
+                gameOver = True
 
         if thing_starty > display_height:
             thing_starty = 0 - thing_height
@@ -121,8 +92,46 @@ def game_loop():
         if y < thing_starty+thing_height: #y crossover
             if thing_startx < x + car_width and thing_startx + thing_width > x:
                 crash()
+                gameOver = True
         pygame.display.update()
         clock.tick(30)
-game_loop()
+
+def crash():
+    gameDisplay.blit(back,(0,0))
+    message('You Crashed!',brightred,120,(display_width/3.75),(display_height/2.5))
+    message("Press spacebar to continue or Q to quit",blue,40,(display_width/3.75),(display_height/1.5))
+    pygame.display.update()
+    crashed = True
+    while crashed == True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    pygame.quit()
+                    quit()
+                if event.key == pygame.K_SPACE:
+                    game_loop()
+
+def game_intro():
+    intro = True
+    gameDisplay.blit(back, (0, 0))
+    message('Simple Dodging Game',brightred,90,(display_width/5),(display_height/3))
+    message("P = Play",green,60,(display_width/3.5),(display_height/2))
+    message("Q = Quit",green,60,(display_width/1.75),(display_height/2))
+    pygame.display.update()
+    while intro:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_p:
+                    game_loop()
+                elif event.key == pygame.K_q:
+                    pygame.quit()
+                    quit()
+game_intro()
 pygame.quit()
 quit()
